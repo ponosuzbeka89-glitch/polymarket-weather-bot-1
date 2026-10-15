@@ -591,3 +591,6 @@ CITY_ALIASES = {
     "wellington":    "Wellington",
     "mexico city":   "Mexico City",
 }
+ACTIVE_CITIES = ['New York City', 'Chicago', 'Houston', 'Dallas', 'Miami', 'London', 'Paris', 'Munich', 'Warsaw', 'Madrid', 'Toronto', 'Tokyo', 'Ankara']
+CITIES = {k: v for k, v in CITIES.items() if k in ACTIVE_CITIES}
+CITY_ALIASES = {k: v for k, v in CITY_ALIASES.items() if v in ACTIVE_CITIES}
