@@ -191,29 +191,30 @@ def fetch_temperature_markets() -> list[dict]:
     Returns list of parsed market dicts.
     Raises on API failure — no fake fallback.
     """
-    all_markets = []
-    batch = 500
-    for offset in range(0, 20000, batch):
+       all_markets = []
+    batch = 100
+
+    for offset in range(0, 5000, batch):
         resp = requests.get(
-            f"{GAMMA_API}/markets",
+            f"{GAMMA_API}/events",
             params={
+                "tag_id": 84,
                 "active": "true",
                 "closed": "false",
                 "limit": batch,
                 "offset": offset,
-                "order": "endDate",
-                "ascending": "true",
             },
             timeout=20,
         )
+        if resp.status_code == 422 and all_markets:
+            break
         resp.raise_for_status()
         data = resp.json()
         if not data:
             break
-        all_markets.extend(data)
+        for ev in data:
+            all_markets.extend(ev.get("markets", []))
         logger.debug("Fetched %d markets (offset=%d)", len(all_markets), offset)
-
-    logger.info("Total active markets fetched: %d", len(all_markets))
 
     # Filter to temperature/weather markets with sufficient liquidity
     temp_kw = ["°c", "°f", "temperature"]
